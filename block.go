@@ -18,22 +18,22 @@ type Block struct {
 	Previous string
 }
 
-func (block *Block) CalculateHash() {
-	hash := ""
+func (block *Block) Mine() {
+	block.Hash = ""
 	block.Nonce = -1
 
-	for done := false; !done; done = strings.HasPrefix(hash, "0000") {
+	for done := false; !done; done = strings.HasPrefix(block.Hash, "0000") {
 		block.Nonce = block.Nonce + 1
-		// fmt.Printf("  Trying with nonce %d\n", block.Nonce)
 		data := fmt.Sprintf("%d-%s-%d-%s", block.ID, block.Data, block.Nonce, block.Previous)
-		// fmt.Println(data)
-		hasher := sha1.New()
-		hasher.Write([]byte(data))
-		hash = base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+		block.Hash = calculateHash(data)
 	}
 
 	p := message.NewPrinter(language.English)
-	p.Printf("Valid hash found! %s (nonce %d)\n", hash, block.Nonce)
+	p.Printf("Valid hash found! %s (nonce %d)\n", block.Hash, block.Nonce)
+}
 
-	block.Hash = hash
+func calculateHash(data string) string {
+	hasher := sha1.New()
+	hasher.Write([]byte(data))
+	return base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 }
