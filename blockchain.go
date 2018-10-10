@@ -7,12 +7,13 @@ import (
 
 type BlockChain struct {
 	Blocks    map[string]*Block
+	Challenge string
 	LastBlock *Block
 }
 
 func (blockchain *BlockChain) Append(data string) {
 	block := blockchain.createUnminedBlock(data)
-	block.Mine()
+	block.Mine(blockchain.Challenge)
 	appendBlock(blockchain, block)
 }
 
@@ -25,7 +26,6 @@ func (blockchain *BlockChain) Print() {
 }
 
 func (blockchain *BlockChain) createUnminedBlock(data string) *Block {
-
 	block := Block{
 		Timestamp: time.Now(),
 		Data:      data,
