@@ -5,31 +5,45 @@ import (
 	"encoding/base64"
 	"fmt"
 	"strings"
+	"time"
 
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
 type Block struct {
-	ID       int
-	Data     string
-	Nonce    int
-	Hash     string
-	Previous string
+	Number    int
+	Timestamp time.Time
+	Data      string
+	Nonce     int
+	Hash      string
+	Previous  string
+}
+
+func (block *Block) String() string {
+	return fmt.Sprintf("Block %d: {\n   ts: %s\n   nonce: %d\n   hash: %s\n   previous: %s\n}", block.Number, block.Timestamp, block.Nonce, block.Hash, block.Previous)
 }
 
 func (block *Block) Mine() {
+
+	fmt.Printf("Mining block %d... ", block.Number)
+
+	tsStart := time.Now()
+
 	block.Hash = ""
 	block.Nonce = -1
 
 	for done := false; !done; done = strings.HasPrefix(block.Hash, "0000") {
 		block.Nonce = block.Nonce + 1
-		data := fmt.Sprintf("%d-%s-%d-%s", block.ID, block.Data, block.Nonce, block.Previous)
+		data := fmt.Sprintf("%d-%d-%s-%d-%s", block.Number, block.Timestamp.Nanosecond(), block.Data, block.Nonce, block.Previous)
 		block.Hash = calculateHash(data)
 	}
 
+	tsEnd := time.Now()
+	elapsedTime := tsEnd.Sub(tsStart)
+
 	p := message.NewPrinter(language.English)
-	p.Printf("Valid hash found! %s (nonce %d)\n", block.Hash, block.Nonce)
+	p.Printf("Valid hash found in %s! (hash: %s, nonce: %d)\n", elapsedTime.String(), block.Hash, block.Nonce)
 }
 
 func calculateHash(data string) string {
