@@ -21,7 +21,7 @@ type Block struct {
 }
 
 func (block *Block) String() string {
-	return fmt.Sprintf("Block %d: {\n   ts: %s\n   nonce: %d\n   hash: %s\n   previous: %s\n}", block.Number, block.Timestamp, block.Nonce, block.Hash, block.Previous)
+	return fmt.Sprintf("Block %d: {\n   ts:\t\t%s\n   nonce:\t%d\n   hash:\t%s\n   previous:\t%s\n}", block.Number, block.Timestamp, block.Nonce, block.Hash, block.Previous)
 }
 
 func (block *Block) Mine() {
@@ -33,7 +33,7 @@ func (block *Block) Mine() {
 	block.Hash = ""
 	block.Nonce = -1
 
-	for done := false; !done; done = strings.HasPrefix(block.Hash, "0000") {
+	for done := false; !done; done = strings.HasPrefix(block.Hash, "000") {
 		block.Nonce = block.Nonce + 1
 		data := fmt.Sprintf("%d-%d-%s-%d-%s", block.Number, block.Timestamp.Nanosecond(), block.Data, block.Nonce, block.Previous)
 		block.Hash = calculateHash(data)
